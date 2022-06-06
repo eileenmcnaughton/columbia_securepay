@@ -40,11 +40,19 @@ cv en columbia_securepay
 
 ![img.png](img.png)
 
-The remove site will need to know
+The remote site will need to know
 - the url - something like https://{siteName}/civicrm/ajax/api4/Securepay/submit`
 - the api key
--
+- the site key - this is the value referred to as encryptionKey in test.php
+
+The test.php file shows how a remote site will
 
 ## Known Issues
 
-(* FIXME *)
+This is still in development - secure pay requests received will
+be visible in the display visible in the Contribution->Secure Pay
+but are not as yet processed through to CiviCRM
+
+There is an api to process them (eg
+`drush Securepay.process version=4 id=1 checkPermissions=0`)
+but this is only exposed in the Api Explorer as yet
