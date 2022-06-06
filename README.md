@@ -45,7 +45,8 @@ The remote site will need to know
 - the api key
 - the site key - this is the value referred to as encryptionKey in test.php
 
-The test.php file shows how a remote site will
+The [Sample code](test.php) demonstrates a php version of how the remote site
+could interact.
 
 ## Known Issues
 
