@@ -43,12 +43,13 @@ class Submit extends AbstractAction {
    * @param \Civi\Api4\Generic\Result $result
    *
    * @throws \API_Exception
+   * @throws \JsonException
    */
   public function _run(Result $result) {
     $log = new \CRM_Utils_SystemLogger();
     $log->alert('secure_pay_incoming', $_REQUEST);
     $cipher = 'aes-256-ctr';
-    $data = json_decode(openssl_decrypt(base64_decode($this->fields), $cipher, CIVICRM_SITE_KEY, 0, $this->getIV()), TRUE);
+    $data = json_decode(openssl_decrypt(base64_decode($this->fields), $cipher, CIVICRM_SITE_KEY, 0, $this->getIV()), TRUE, 512, JSON_THROW_ON_ERROR);
     $log->alert('secure_pay_decoded', $data);
     Securepay::create(FALSE)->setValues([
       'order_id' => $data['order_id'],
