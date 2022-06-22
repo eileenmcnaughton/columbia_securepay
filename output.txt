@@ -1,0 +1,31 @@
+First the iv is generated
+Command - random_bytes(16)
+Generated iv is :
+õà$‘þt(ìÁ²52~Ä¶
+
+The parameters as json_encoded
+Command - json_encode($params)
+{"order_id":5,"fields":{"receive_date":"2021-05-23 15:23:45","amount":2345.88,"status":"Pending","first_name":"Sue","last_name":"Presley","email":"sue@example.com","street_address":"23 Main St","supplemental_address_1":"Mosley Corner","city":"Bigville","state":"CA","postal_code":90210,"prefix":"Mr.","suffix":"I","affiliation":"Barnard College","uni":"uni y","heard_from":"A friend","is_test":1}}
+
+The json is encrypted
+Command - openssl_encrypt($jsonParams, $cipher, $encryptionKey, 0, $iv)
+WT1eeFJRoprfLbyW74PsWsC9Zem79a/TARi0k3c1pRnPglv6MD+BY9b63QmA/HZsysqaLNU7Kx4rdLhKjGy4QimSwg7lQm0uwUIkMflmFV6EwpuJqm7PbxfmT8RI0m0R8PdflqNCSkkowirYZImDGg4wulvq3WY/iWDZwNsg8QnopMOEvMUy2zSNaqFPnu28KkjYkfLyXMfHcPIJZmiCktRJAcMOkXGdCc0FqqsPYW156XF63q8WUQfFM3+3RtmQQvm3/qvjVchsnt0Y/xxGz5IBvkqM+aMbeP3K2jasOeIXKg5vBvsUq3z2KZE53gpWzTFWsiV/pmCVqRgtiFfu8odpkOdSf4QPND6kKM+wYsdsxooBF30sRE/DfZbHCQFz+tZMQ+KC5YPZjRz1OH8f7OZJp/UUFeiFxyhJjNwwejU8kTF//rZcgmrfoAbSe522uDu+lXiBfZI3qLI+7OxjKe8sOSGLpT9hyjWSWurVuovhNou/qASb0bkLSZ+rNUqOwzSVAUjDuZ8FEm2xGQ==
+
+The encrypted string is base64_encoded (so it will make valid json)
+Command - base64_encode($encryptedParams)
+V1QxZWVGSlJvcHJmTGJ5Vzc0UHNXc0M5WmVtNzlhL1RBUmkwazNjMXBSblBnbHY2TUQrQlk5YjYzUW1BL0hac3lzcWFMTlU3S3g0cmRMaEtqR3k0UWltU3dnN2xRbTB1d1VJa01mbG1GVjZFd3B1SnFtN1BieGZtVDhSSTBtMFI4UGRmbHFOQ1Nra293aXJZWkltREdnNHd1bHZxM1dZL2lXRFp3TnNnOFFub3BNT0V2TVV5MnpTTmFxRlBudTI4S2tqWWtmTHlYTWZIY1BJSlptaUNrdFJKQWNNT2tYR2RDYzBGcXFzUFlXMTU2WEY2M3E4V1VRZkZNMyszUnRtUVF2bTMvcXZqVmNoc250MFkveHhHejVJQnZrcU0rYU1iZVAzSzJqYXNPZUlYS2c1dkJ2c1VxM3oyS1pFNTNncFd6VEZXc2lWL3BtQ1ZxUmd0aUZmdThvZHBrT2RTZjRRUE5ENmtLTSt3WXNkc3hvb0JGMzBzUkUvRGZaYkhDUUZ6K3RaTVErS0M1WVBaalJ6MU9IOGY3T1pKcC9VVUZlaUZ4eWhKak53d2VqVThrVEYvL3JaY2dtcmZvQWJTZTUyMnVEdStsWGlCZlpJM3FMSSs3T3hqS2U4c09TR0xwVDloeWpXU1d1clZ1b3ZoTm91L3FBU2IwYmtMU1orck5VcU93elNWQVVqRHVaOEZFbTJ4R1E9PQ==
+
+The iv is base64_encoded (so it will make valid json)
+Command - base64_encode($iv)
+9eAkkf50KOzBsjUyfsS2Dg==
+
+Finally the postArray is compiled, as json
+Array
+(
+    [form_params] => Array
+        (
+            [params] => {"fields":"V1QxZWVGSlJvcHJmTGJ5Vzc0UHNXc0M5WmVtNzlhL1RBUmkwazNjMXBSblBnbHY2TUQrQlk5YjYzUW1BL0hac3lzcWFMTlU3S3g0cmRMaEtqR3k0UWltU3dnN2xRbTB1d1VJa01mbG1GVjZFd3B1SnFtN1BieGZtVDhSSTBtMFI4UGRmbHFOQ1Nra293aXJZWkltREdnNHd1bHZxM1dZL2lXRFp3TnNnOFFub3BNT0V2TVV5MnpTTmFxRlBudTI4S2tqWWtmTHlYTWZIY1BJSlptaUNrdFJKQWNNT2tYR2RDYzBGcXFzUFlXMTU2WEY2M3E4V1VRZkZNMyszUnRtUVF2bTMvcXZqVmNoc250MFkveHhHejVJQnZrcU0rYU1iZVAzSzJqYXNPZUlYS2c1dkJ2c1VxM3oyS1pFNTNncFd6VEZXc2lWL3BtQ1ZxUmd0aUZmdThvZHBrT2RTZjRRUE5ENmtLTSt3WXNkc3hvb0JGMzBzUkUvRGZaYkhDUUZ6K3RaTVErS0M1WVBaalJ6MU9IOGY3T1pKcC9VVUZlaUZ4eWhKak53d2VqVThrVEYvL3JaY2dtcmZvQWJTZTUyMnVEdStsWGlCZlpJM3FMSSs3T3hqS2U4c09TR0xwVDloeWpXU1d1clZ1b3ZoTm91L3FBU2IwYmtMU1orck5VcU93elNWQVVqRHVaOEZFbTJ4R1E9PQ==","iv":"9eAkkf50KOzBsjUyfsS2Dg=="}
+        )
+
+)
+
