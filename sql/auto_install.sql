@@ -35,7 +35,7 @@ SET FOREIGN_KEY_CHECKS=1;
 -- *******************************************************/
 CREATE TABLE `civicrm_securepay` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique Securepay ID',
-  `order_id` int unsigned NOT NULL COMMENT 'Secure Pay Order ID',
+  `order_id` varchar(64) NOT NULL COMMENT 'Secure Pay Order ID',
   `contribution_id` int unsigned COMMENT 'Contribution ID',
   `receive_date` datetime COMMENT 'Date contribution was received - not necessarily the creation date of the record',
   `amount` decimal(20,2) NOT NULL COMMENT 'Total amount of this contribution. Use market value for non-monetary gifts.',

@@ -22,7 +22,8 @@
   </primaryKey>
   <field>
     <name>order_id</name>
-    <type>int unsigned</type>
+    <type>varchar</type>
+    <length>64</length>
     <comment>Secure Pay Order ID</comment>
     <required>1</required>
   </field>
