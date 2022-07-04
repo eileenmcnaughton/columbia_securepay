@@ -10,7 +10,7 @@ return [
       'values' => [
         'label' => 'Secure Pay',
         'name' => 'Secure Pay',
-        'url' => 'civicrm/search#/display/SecurePay',
+        'url' => 'civicrm/search#/display/SecurePay/SecurePay_Table_1',
         'icon' => NULL,
         'permission' => [
           'access CiviContribute',
