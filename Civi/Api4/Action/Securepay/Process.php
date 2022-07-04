@@ -2,6 +2,7 @@
 
 namespace Civi\Api4\Action\Securepay;
 
+use Civi\Api4\CustomField;
 use Civi\Api4\Generic\AbstractAction;
 use Civi\Api4\Generic\Result;
 use Civi\Api4\Securepay;
@@ -30,16 +31,7 @@ class Process extends AbstractAction {
    */
   public function _run(Result $result) {
     $securePay = Securepay::get()->addSelect('*', 'order_status_id:name')->addWhere('id', '=', $this->id)->execute()->first();
-    $customFields = [
-      'Contact' => [
-        'affiliation' => 'custom_41',//'User_Profile.Affiliation:name',
-        'uni' => 'custom_8',//'User_Profile.UNI',
-      ],
-      'Contribution' => [
-        'heard_from' => 'Contribution_Details.Referral_Source:label',
-        'affiliation' => 'Contribution_Details.Affiliation:label',
-      ],
-    ];
+
     $contactParams = [
       'dupe_check' => TRUE,
       'first_name' => $securePay['first_name'],
@@ -68,12 +60,27 @@ class Process extends AbstractAction {
     // We do this second update cos it will not have updated above if it found an id.
     $contactParams['id'] = $contactID;
     unset($contactParams['dupe_check']);
-    foreach (array_merge($customFields['Contribution'], [
+
+    $mappedFields = [
       'prefix' => 'prefix_id',
       'suffix' => 'prefix_id',
-    ]) as $remoteFieldName => $civicrmField) {
+    ];
+
+    $customFields = (array) CustomField::get()
+      ->addSelect('custom_group_id.extends', 'id', 'Custom_Fields.Secure_pay_field', 'name','custom_group_id.name')
+      ->addWhere('Custom_Fields.Secure_pay_field', 'IS NOT EMPTY')
+      ->setLimit(25)
+      ->execute();
+    foreach ($customFields as $customField) {
+      // We assume anything not contribution is contact.
+      if ($customField['custom_group_id.extends'] !== 'Contribution') {
+        $mappedFields['Custom_Fields.Secure_pay_field'] = 'custom_' . $customField['id'];
+      }
+    }
+    foreach ($mappedFields as $remoteFieldName => $civicrmField) {
+      // For contact we don't want to over-write existing data with blank.
       if (!empty($securePay['data'][$remoteFieldName])) {
-        $contactParams['prefix_id:label'] = $securePay['data']['prefix'];
+        $contactParams[$civicrmField] = $securePay['data'][$remoteFieldName];
       }
     }
     try {
@@ -94,8 +101,11 @@ class Process extends AbstractAction {
       'contact_id' => $contactID,
       'financial_type_id:name' => 'Donation',
     ];
-    foreach ($customFields['Contribution'] as $remoteFieldName => $civicrmField) {
-      $contributionParams[$civicrmField] = $securePay['data'][$remoteFieldName] ?? NULL;
+    foreach ($customFields as $customField) {
+      // We assume anything not contribution is contact.
+      if ($customField['custom_group_id.extends'] === 'Contribution') {
+        $contributionParams[$customField['custom_group_id.name'] . '.' . $customField['name']] = $securePay['data'][$customField['Custom_Fields.Secure_pay_field']] ?? NULL;
+      }
     }
 
     $contribution = Contribution::create()->setValues($contributionParams)->execute()->first();
