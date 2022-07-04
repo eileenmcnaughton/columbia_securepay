@@ -104,7 +104,7 @@ class Process extends AbstractAction {
 
     $contributionParams = [
       'total_amount' => $securePay['amount'],
-      'status_id:name' => $this->getMappedStatus($securePay['data']['status']),
+      'contribution_status_id:name' => $this->getMappedStatus($securePay['data']['status']),
       'invoice_id' => $securePay['order_id'],
       'is_test' => $securePay['is_test'],
       'receive_date' => $securePay['receive_date'],
