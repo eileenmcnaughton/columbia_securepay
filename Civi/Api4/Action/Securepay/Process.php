@@ -30,10 +30,12 @@ class Process extends AbstractAction {
    * @throws \Civi\API\Exception\UnauthorizedException
    */
   public function _run(Result $result) {
-    $securePay = Securepay::get()->addSelect('*', 'order_status_id:name')->addWhere('id', '=', $this->id)->execute()->first();
+    $securePay = Securepay::get($this->getCheckPermissions())->addSelect('*', 'order_status_id:name')->addWhere('id', '=', $this->id)->execute()->first();
+    $existingContribution = Contribution::get($this->getCheckPermissions())
+      ->addWhere('invoice_id', '=', $securePay['order_id'])
+      ->addSelect('id', 'invoice_id', 'status_id:name', 'contact_id')->execute()->first();
 
     $contactParams = [
-      'dupe_check' => TRUE,
       'first_name' => $securePay['first_name'],
       'last_name' => $securePay['last_name'],
       'email' => $securePay['email'],
@@ -46,6 +48,13 @@ class Process extends AbstractAction {
       'state_province_id' => $securePay['state'] ?? NULL,
       'source' => 'SecurePay',
     ];
+    if (isset($existingContribution['contact_id'])) {
+      $contactParams['id'] = $existingContribution['contact_id'];
+    }
+    else {
+      $contactParams['dupe_check'] = TRUE;
+    }
+
     try {
       $contactID = \civicrm_api3('Contact', 'create', $contactParams)['id'];
     }
@@ -67,7 +76,7 @@ class Process extends AbstractAction {
       'suffix' => 'prefix_id',
     ];
 
-    $customFields = (array) CustomField::get()
+    $customFields = (array) CustomField::get($this->getCheckPermissions())
       ->addSelect('custom_group_id.extends', 'id', 'Custom_Fields.Secure_pay_field', 'name','custom_group_id.name')
       ->addWhere('Custom_Fields.Secure_pay_field', 'IS NOT EMPTY')
       ->setLimit(25)
@@ -95,7 +104,7 @@ class Process extends AbstractAction {
 
     $contributionParams = [
       'total_amount' => $securePay['amount'],
-      'status_id:name' => $securePay['order_status_id'],
+      'status_id:name' => $this->getMappedStatus($securePay['order_status_id']),
       'invoice_id' => $securePay['order_id'],
       'is_test' => $securePay['is_test'],
       'receive_date' => $securePay['receive_date'],
@@ -111,12 +120,29 @@ class Process extends AbstractAction {
       }
     }
 
-    $contribution = Contribution::create()->setValues($contributionParams)->execute()->first();
+    $contribution = Contribution::create($this->getCheckPermissions())->setValues($contributionParams)->execute()->first();
 
-    Securepay::update(FALSE)->setValues([
+    Securepay::update($this->getCheckPermissions())->setValues([
       'processing_status_id:name' => 'Completed',
       'contribution_id' => $contribution['id'],
     ])->addWhere('id', '=', $this->id)->execute();
+  }
+
+  /**
+   * Get the mapped contribution status.
+   *
+   * @param $orderStatus
+   *
+   * @return string
+   */
+  private function getMappedStatus($orderStatus): string {
+    return [
+      'processing' => 'Pending',
+      'complete' => 'Completed',
+       // There is a status - requires Follow-up on the site...?
+      'discarded' => 'Cancelled',
+      'incomplete(CANCEL)' => 'Cancelled',
+    ][$orderStatus] ?? 'Pending';
   }
 
 }
