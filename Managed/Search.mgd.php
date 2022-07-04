@@ -18,6 +18,7 @@ return [
           'version' => 4,
           'select' => [
             'order_id',
+            'contribution_id',
             'receive_date',
             'amount',
             'order_status_id:label',
