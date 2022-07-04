@@ -91,30 +91,16 @@ function columbia_securepay_civicrm_permission(array &$permissions) {
   ];
 }
 
-// --- Functions below this ship commented out. Uncomment as required. ---
-
 /**
- * Implements hook_civicrm_preProcess().
+ * Implements hook_civicrm_searchKitTasks().
  *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_preProcess
+ * @param array[] $tasks
  */
-//function columbia_securepay_civicrm_preProcess($formName, &$form) {
-//
-//}
-
-/**
- * Implements hook_civicrm_navigationMenu().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
- */
-//function columbia_securepay_civicrm_navigationMenu(&$menu) {
-//  _columbia_securepay_civix_insert_navigation_menu($menu, 'Mailings', [
-//    'label' => E::ts('New subliminal message'),
-//    'name' => 'mailing_subliminal_message',
-//    'url' => 'civicrm/mailing/subliminal',
-//    'permission' => 'access CiviMail',
-//    'operator' => 'OR',
-//    'separator' => 0,
-//  ]);
-//  _columbia_securepay_civix_navigationMenu($menu);
-//}
+function columbia_securepay_civicrm_searchKitTasks(&$tasks) {
+  $tasks['Securepay']['process'] = [
+    'module' => 'crmColumbiaSecurepay',
+    'title' => E::ts('Process Securepay notification'),
+    'icon' => 'fa-random',
+    'uiDialog' => ['templateUrl' => '~/crmColumbiaSecurepay/process.html'],
+  ];
+}
