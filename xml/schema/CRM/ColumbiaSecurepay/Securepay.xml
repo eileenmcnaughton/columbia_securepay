@@ -42,6 +42,13 @@
     <fieldName>contribution_id</fieldName>
     <add>1.0</add>
   </index>
+  <foreignKey>
+    <name>contribution_id</name>
+    <table>civicrm_contribution</table>
+    <key>id</key>
+    <add>1.0</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
   <field>
     <name>receive_date</name>
     <title>Date Received</title>
