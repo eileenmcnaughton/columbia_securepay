@@ -33,7 +33,9 @@ class Process extends AbstractAction {
     $securePay = Securepay::get($this->getCheckPermissions())->addSelect('*', 'order_status_id:name')->addWhere('id', '=', $this->id)->execute()->first();
     $existingContribution = Contribution::get($this->getCheckPermissions())
       ->addWhere('invoice_id', '=', $securePay['order_id'])
-      ->addSelect('id', 'invoice_id', 'status_id:name', 'contact_id')->execute()->first();
+      ->addWhere('is_test', 'IN', [1, 0])
+      ->addSelect('id', 'invoice_id', 'status_id:name', 'contact_id')
+      ->execute()->first();
 
     $contactParams = [
       'first_name' => $securePay['first_name'],
