@@ -58,7 +58,7 @@ class Submit extends AbstractAction {
       'email' => $data['fields']['email'],
       'receive_date'  => $data['fields']['receive_date'],
       'amount' => $data['fields']['amount'],
-      'order_status_id:name' => $data['fields']['amount'],
+      'order_status_id:name' => $data['fields']['status'],
       'is_test' => $data['fields']['is_test'],
       'street_address' => $data['fields']['street_address'],
       'supplemental_address_1' => $data['fields']['supplemental_address_1'],
