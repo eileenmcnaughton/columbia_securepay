@@ -102,6 +102,7 @@ class Process extends AbstractAction {
       'contact_id' => $contactID,
       'financial_type_id:name' => 'Donation',
       'source' => 'SecurePay',
+      'payment_instrument_id:name' => 'Credit Card',
     ];
     foreach ($customFields as $customField) {
       // We assume anything not contribution is contact.
