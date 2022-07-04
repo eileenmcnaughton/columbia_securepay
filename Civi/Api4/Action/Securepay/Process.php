@@ -119,8 +119,11 @@ class Process extends AbstractAction {
         $contributionParams[$customField['custom_group_id.name'] . '.' . $customField['name']] = $securePay['data'][$customField['Custom_Fields.Secure_pay_field']] ?? NULL;
       }
     }
+    if (!empty($existingContribution['id'])) {
+      $contributionParams['id'] = $existingContribution['id'];
+    }
 
-    $contribution = Contribution::create($this->getCheckPermissions())->setValues($contributionParams)->execute()->first();
+    $contribution = Contribution::save($this->getCheckPermissions())->setRecords([$contributionParams])->execute()->first();
 
     Securepay::update($this->getCheckPermissions())->setValues([
       'processing_status_id:name' => 'Completed',
