@@ -47,7 +47,7 @@
     <table>civicrm_contribution</table>
     <key>id</key>
     <add>1.0</add>
-    <onDelete>CASCADE</onDelete>
+    <onDelete>SET NULL</onDelete>
   </foreignKey>
   <field>
     <name>receive_date</name>

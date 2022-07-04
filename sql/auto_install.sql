@@ -61,6 +61,6 @@ CREATE TABLE `civicrm_securepay` (
   INDEX `UI_first_name`(first_name),
   INDEX `UI_last_name`(last_name),
   INDEX `UI_email`(email),
-  CONSTRAINT FK_civicrm_securepay_contribution_id FOREIGN KEY (`contribution_id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE
+  CONSTRAINT FK_civicrm_securepay_contribution_id FOREIGN KEY (`contribution_id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE SET NULL
 )
 ENGINE=InnoDB;
