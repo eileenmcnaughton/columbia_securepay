@@ -79,7 +79,7 @@ class Process extends AbstractAction {
     ];
 
     $customFields = (array) CustomField::get($this->getCheckPermissions())
-      ->addSelect('custom_group_id.extends', 'id', 'Custom_Fields.Secure_pay_field', 'name','custom_group_id.name')
+      ->addSelect('custom_group_id.extends', 'id', 'Custom_Fields.Secure_pay_field', 'name','custom_group_id.name', 'option_group_id')
       ->addWhere('Custom_Fields.Secure_pay_field', 'IS NOT EMPTY')
       ->setLimit(25)
       ->execute();
@@ -118,7 +118,11 @@ class Process extends AbstractAction {
     foreach ($customFields as $customField) {
       // We assume anything not contribution is contact.
       if ($customField['custom_group_id.extends'] === 'Contribution') {
-        $contributionParams[$customField['custom_group_id.name'] . '.' . $customField['name']] = $securePay['data'][$customField['Custom_Fields.Secure_pay_field']] ?? NULL;
+        $field = $customField['custom_group_id.name'] . '.' . $customField['name'];
+        if ($customField['option_group_id']) {
+          $field .= ':label';
+        }
+        $contributionParams[$field] = $securePay['data'][$customField['Custom_Fields.Secure_pay_field']] ?? NULL;
       }
     }
     if (!empty($existingContribution['id'])) {
