@@ -30,13 +30,20 @@ class Process extends AbstractAction {
    */
   public function _run(Result $result) {
     $securePay = Securepay::get()->addSelect('*', 'order_status_id:name')->addWhere('id', '=', $this->id)->execute()->first();
-
+    $customFields = [
+      'Contact' => [
+        'affiliation' => 'custom_41',//'User_Profile.Affiliation:name',
+        'uni' => 'custom_8',//'User_Profile.UNI',
+      ],
+      'Contribution' => [
+        'heard_from' => 'Contribution_Details.Referral_Source:label',
+        'affiliation' => 'Contribution_Details.Affiliation:label',
+      ],
+    ];
     $contactParams = [
       'dupe_check' => TRUE,
       'first_name' => $securePay['first_name'],
       'last_name' => $securePay['last_name'],
-      'prefix_id:label' => $securePay['data']['prefix'],
-      'suffix_id:label' => $securePay['data']['suffix'],
       'email' => $securePay['email'],
       'street_address' => $securePay['street_address'],
       'supplemental_address_1' => $securePay['supplemental_address_1'],
@@ -58,6 +65,25 @@ class Process extends AbstractAction {
         throw $e;
       }
     }
+    // We do this second update cos it will not have updated above if it found an id.
+    $contactParams['id'] = $contactID;
+    unset($contactParams['dupe_check']);
+    foreach (array_merge($customFields['Contribution'], [
+      'prefix' => 'prefix_id',
+      'suffix' => 'prefix_id',
+    ]) as $remoteFieldName => $civicrmField) {
+      if (!empty($securePay['data'][$remoteFieldName])) {
+        $contactParams['prefix_id:label'] = $securePay['data']['prefix'];
+      }
+    }
+    try {
+      $contactID = \civicrm_api3('Contact', 'create', $contactParams)['id'];
+    }
+    catch (\CiviCRM_API3_Exception $e) {
+      // We can continue here as we have a contact - we just failed to save
+      // some piece of data.
+      \Civi::log()->warning('secure_pay_update_fail', ['message' => $e->getMessage()]);
+    }
 
     $contributionParams = [
       'total_amount' => $securePay['amount'],
@@ -68,6 +94,9 @@ class Process extends AbstractAction {
       'contact_id' => $contactID,
       'financial_type_id:name' => 'Donation',
     ];
+    foreach ($customFields['Contribution'] as $remoteFieldName => $civicrmField) {
+      $contributionParams[$civicrmField] = $securePay['data'][$remoteFieldName] ?? NULL;
+    }
 
     $contribution = Contribution::create()->setValues($contributionParams)->execute()->first();
 
