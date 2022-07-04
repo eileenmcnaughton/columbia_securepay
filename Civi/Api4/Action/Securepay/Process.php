@@ -44,6 +44,7 @@ class Process extends AbstractAction {
       'country_id' => 'United States',
       'contact_type' => 'Individual',
       'state_province_id' => $securePay['state'] ?? NULL,
+      'source' => 'SecurePay',
     ];
     try {
       $contactID = \civicrm_api3('Contact', 'create', $contactParams)['id'];
@@ -59,7 +60,7 @@ class Process extends AbstractAction {
     }
     // We do this second update cos it will not have updated above if it found an id.
     $contactParams['id'] = $contactID;
-    unset($contactParams['dupe_check']);
+    unset($contactParams['dupe_check'], $contactParams['source']);
 
     $mappedFields = [
       'prefix' => 'prefix_id',
@@ -74,7 +75,7 @@ class Process extends AbstractAction {
     foreach ($customFields as $customField) {
       // We assume anything not contribution is contact.
       if ($customField['custom_group_id.extends'] !== 'Contribution') {
-        $mappedFields['Custom_Fields.Secure_pay_field'] = 'custom_' . $customField['id'];
+        $mappedFields[$customField['Custom_Fields.Secure_pay_field']] = 'custom_' . $customField['id'];
       }
     }
     foreach ($mappedFields as $remoteFieldName => $civicrmField) {
@@ -100,6 +101,7 @@ class Process extends AbstractAction {
       'receive_date' => $securePay['receive_date'],
       'contact_id' => $contactID,
       'financial_type_id:name' => 'Donation',
+      'source' => 'SecurePay',
     ];
     foreach ($customFields as $customField) {
       // We assume anything not contribution is contact.
