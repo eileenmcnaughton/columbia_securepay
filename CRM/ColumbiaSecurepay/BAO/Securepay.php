@@ -28,9 +28,10 @@ class CRM_ColumbiaSecurepay_BAO_Securepay extends CRM_ColumbiaSecurepay_DAO_Secu
    */
   public static function getOrderStatuses(): array {
     return [
-      ['id' => 1, 'name' => 'Pending', 'title' => ts('Pending')],
-      ['id' => 2, 'name' => 'Failed', 'title' => ts('Failed')],
-      ['id' => 3, 'name' => 'Completed', 'title' => ts('Completed')],
+      ['id' => 1, 'name' => 'processing', 'title' => ts('Processing')],
+      ['id' => 2, 'name' => 'discarded', 'title' => ts('Discarded')],
+      ['id' => 3, 'name' => 'complete', 'title' => ts('Completed')],
+      ['id' => 2, 'name' => 'incomplete(CANCEL)', 'title' => ts('Incomplete (CANCEL)')],
     ];
   }
 
