@@ -34,6 +34,9 @@ class Process extends AbstractAction {
     $contactParams = [
       'dupe_check' => TRUE,
       'first_name' => $securePay['first_name'],
+      'last_name' => $securePay['last_name'],
+      'prefix_id:label' => $securePay['data']['prefix'],
+      'suffix_id:label' => $securePay['data']['suffix'],
       'email' => $securePay['email'],
       'street_address' => $securePay['street_address'],
       'supplemental_address_1' => $securePay['supplemental_address_1'],
