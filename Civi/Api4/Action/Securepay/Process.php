@@ -9,10 +9,18 @@ use Civi\Api4\Securepay;
 use Civi\Api4\Contribution;
 
 /**
- * @method $this setID(integer)
  */
 class Process extends AbstractAction {
 
+  /**
+   * @param int $id
+   *
+   * @return $this
+   */
+  public function setID(int $id): Process {
+    $this->id = $id;
+    return $this;
+  }
   /**
    * Secure pay entry id
    *

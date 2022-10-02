@@ -51,7 +51,7 @@ class Submit extends AbstractAction {
     $cipher = 'aes-256-ctr';
     $data = json_decode(openssl_decrypt(base64_decode($this->fields), $cipher, CIVICRM_SITE_KEY, 0, $this->getIV()), TRUE, 512, JSON_THROW_ON_ERROR);
     $log->alert('secure_pay_decoded', $data);
-    Securepay::create(FALSE)->setValues([
+    $securePay = Securepay::create(FALSE)->setValues([
       'order_id' => $data['order_id'],
       'first_name' => $data['fields']['first_name'],
       'last_name' => $data['fields']['last_name'],
@@ -68,6 +68,8 @@ class Submit extends AbstractAction {
       // Store the entire array in data, including the fields that don't have their own field.
       'data' => $data['fields'],
 
-      ])->execute();
+      ])->execute()->first();
+
+    Securepay::process(FALSE)->setID($securePay['id'])->execute();
   }
 }
