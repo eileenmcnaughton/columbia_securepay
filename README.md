@@ -5,7 +5,7 @@ Internal Columbia communication with internal Secure Pay
 The extension supplies an end point to receive notifications from the Columbia Secure pay
 system and process them into CiviCRM.
 
-When a payment is received it is logged in the civicrm_system_log table in the first instance
+When a SecurePay notification is received it is logged in the civicrm_system_log table in the first instance
 and then records are created in the civicrm_secure_pay table. The first is primarily for debugging
 and can be accessed through the api explorer (Support->Administrator->Api3 Explorer). It keeps a track of any raw information
 that is sent in from the Columbia Secure pay server. The point of logging the data here
@@ -13,8 +13,12 @@ is that with minimal processing anything that is received would wind up in this 
 even if there were an error later in the process.
 
 Once logged the data is processed into the civicrm_secure_pay table - these rows can be
-seen in Contributions/Secure Pay and are in a more readable format. The table shows
-both the Order status (e.g was the credit card accepted) and the Processing status - has the row
+seen in Contributions/Secure Pay and are in a more readable format. However, it is important to understand
+this is a table of notifications - rather than payments. Most
+payments will have two rows - the notification that it has started
+processing (status = 'processing') and a completion or failure row.
+
+The table shows both the Order status (e.g was the credit card accepted) and the Processing status - has the row
 been processed into CiviCRM. In general the Processing Status will be 'Completed' and
 there will be a contribution ID in the contribution ID column - indicating it has
 been processed. As with accessing the System log - this table would normally only be checked
